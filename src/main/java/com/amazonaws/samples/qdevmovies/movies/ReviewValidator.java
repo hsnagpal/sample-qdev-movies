@@ -8,30 +8,31 @@ public class ReviewValidator {
     // private static final String API_KEY = System.getenv("API_KEY");
     
     public static String validateReview(ReviewRequest request) {
-        // INTENTIONAL ISSUE #3: Overly complex redirection chain
-        return checkUserName(request);
-    }
-    
-    private static String checkUserName(ReviewRequest request) {
-        return verifyUserNameLength(request);
-    }
-    
-    private static String verifyUserNameLength(ReviewRequest request) {
-        return confirmUserNameValid(request);
-    }
-    
-    private static String confirmUserNameValid(ReviewRequest request) {
+        // Validate username
         if (request.getUserName() == null || request.getUserName().trim().isEmpty()) {
             return "User name is required";
         }
-        return checkRating(request);
-    }
-    
-    private static String checkRating(ReviewRequest request) {
+        
+        // Validate rating
         if (request.getRating() < 1 || request.getRating() > 5) {
             return "Rating must be between 1 and 5 stars";
         }
-        return checkComment(request);
+        
+        // Validate comment
+        if (request.getComment() == null || request.getComment().trim().isEmpty()) {
+            return "Review comment is required";
+        }
+        
+        // Check word count
+        String comment = request.getComment().trim();
+        String[] words = comment.split("\\s+");
+        int wordCount = comment.isEmpty() ? 0 : words.length;
+        
+        if (wordCount < 5) {
+            return "Review must be at least 5 words";
+        }
+        
+        return null; // No errors
     }
     
     private static String checkComment(ReviewRequest request) {
