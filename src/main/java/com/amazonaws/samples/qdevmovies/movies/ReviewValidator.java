@@ -40,30 +40,14 @@ public class ReviewValidator {
         }
         
         // INTENTIONAL ISSUE #2: Inefficient nested loops for word counting
+        // Efficient word counting using split
         String comment = request.getComment().trim();
-        int wordCount = 0;
+        String[] words = comment.split("\\s+");
+        int wordCount = words.length;
         
-        // Outer loop through each character
-        for (int i = 0; i < comment.length(); i++) {
-            char currentChar = comment.charAt(i);
-            
-            // Check if this is the start of a word
-            if (currentChar != ' ') {
-                boolean isWordStart = true;
-                
-                // Inner loop to check if previous char was space
-                for (int j = 0; j < i; j++) {
-                    if (j == i - 1) {
-                        if (comment.charAt(j) != ' ') {
-                            isWordStart = false;
-                        }
-                    }
-                }
-                
-                if (isWordStart) {
-                    wordCount++;
-                }
-            }
+        // Handle empty string case
+        if (comment.isEmpty()) {
+            wordCount = 0;
         }
         
         if (wordCount < 5) {
