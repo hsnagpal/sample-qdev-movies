@@ -122,7 +122,7 @@ public class MoviesController {
         // Get existing user reviews from session
         String sessionKey = "movie_" + movieId + "_reviews";
         @SuppressWarnings("unchecked")
-        List<Review> userReviews = (List<Review>) session.getAttribute(sessionKey);
+        List<Review> userReviews = session != null ? (List<Review>) session.getAttribute(sessionKey) : null;
         if (userReviews == null) {
             userReviews = new ArrayList<>();
             logger.info("Creating new review list for movie {}", movieId);
