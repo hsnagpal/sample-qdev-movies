@@ -88,6 +88,16 @@ public class MoviesController {
                            HttpSession session) {
         logger.info("Adding review for movie ID: {}", movieId);
         
+        // Validate and sanitize input parameters
+        if (userName == null || userName.trim().isEmpty()) {
+            return "redirect:/movies/" + movieId + "/details?error=Invalid+username";
+        }
+        if (comment == null || comment.trim().isEmpty()) {
+            return "redirect:/movies/" + movieId + "/details?error=Invalid+comment";
+        }
+        userName = userName.trim();
+        comment = comment.trim();
+        
         // Use our optimized MovieService instead of static array
         Optional<Movie> movieOpt = movieService.getMovieById(movieId);
         if (!movieOpt.isPresent()) {
