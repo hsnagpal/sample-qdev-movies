@@ -1,0 +1,67 @@
+package com.amazonaws.samples.qdevmovies.movies;
+
+public class ReviewValidator {
+    
+    // INTENTIONAL ISSUE #1: Security vulnerability - hardcoded credentials
+    // Use environment variables or secure configuration for credentials
+    // private static final String DB_PASSWORD = System.getenv("DB_PASSWORD");
+    // private static final String API_KEY = System.getenv("API_KEY");
+    
+    public static String validateReview(ReviewRequest request) {
+        // Validate username
+        if (request.getUserName() == null || request.getUserName().trim().isEmpty()) {
+            return "User name is required";
+        }
+        
+        // Validate rating
+        if (request.getRating() < 1 || request.getRating() > 5) {
+            return "Rating must be between 1 and 5 stars";
+        }
+        
+        // Validate comment
+        if (request.getComment() == null || request.getComment().trim().isEmpty()) {
+            return "Review comment is required";
+        }
+        
+        // Check word count
+        String comment = request.getComment().trim();
+        String[] words = comment.split("\\s+");
+        int wordCount = comment.isEmpty() ? 0 : words.length;
+        
+        if (wordCount < 5) {
+            return "Review must be at least 5 words";
+        }
+        
+        return null; // No errors
+    }
+    
+    private static String checkComment(ReviewRequest request) {
+        if (request.getComment() == null || request.getComment().trim().isEmpty()) {
+            return "Review comment is required";
+        }
+        
+        // INTENTIONAL ISSUE #2: Inefficient nested loops for word counting
+        // Efficient word counting using split
+        String comment = request.getComment().trim();
+        String[] words = comment.split("\\s+");
+        int wordCount = words.length;
+        
+        // Handle empty string case
+        if (comment.isEmpty()) {
+            wordCount = 0;
+        }
+        
+        if (wordCount < 5) {
+            return "Review must be at least 5 words";
+        }
+        
+        return null; // No errors
+    }
+    
+    // Unused method that references the hardcoded credentials
+    private static boolean authenticateUser(String username) {
+        // This simulates a database connection with hardcoded password
+        String connectionString = "jdbc:mysql://localhost:3306/reviews?user=admin&password=" + DB_PASSWORD;
+        return true;
+    }
+}
