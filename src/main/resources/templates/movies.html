@@ -3,21 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Movies This Month</title>
+    <title th:text="${isSearchResult} ? 'Movie Search Results - Pirate Cinema' : 'Free Movies This Month - Pirate Cinema'">Free Movies This Month</title>
     <link rel="stylesheet" th:href="@{/css/movies.css}">
 </head>
 <body>
     <div class="container">
-        <h1>Free Movies This Month</h1>
-        <div class="movies-grid">
+        <h1 th:text="${isSearchResult} ? '🏴‍☠️ Movie Search Results' : '🏴‍☠️ Free Movies This Month'">Free Movies This Month</h1>
+        
+        <!-- Pirate Search Form -->
+        <div class="search-section">
+            <h2>🔍 Ahoy! Search fer yer Treasure Movies, Matey!</h2>
+            <form action="/movies/search" method="get" class="search-form">
+                <div class="search-row">
+                    <div class="search-field">
+                        <label for="name">🎬 Movie Name (partial match, ye scallywag!):</label>
+                        <input type="text" id="name" name="name" th:value="${searchName}" 
+                               placeholder="Enter movie name..." class="search-input">
+                    </div>
+                    <div class="search-field">
+                        <label for="id">🆔 Movie ID (exact match, arrr!):</label>
+                        <input type="number" id="id" name="id" th:value="${searchId}" 
+                               placeholder="Enter movie ID..." class="search-input" min="1">
+                    </div>
+                </div>
+                <div class="search-row">
+                    <div class="search-field">
+                        <label for="genre">🎭 Genre (partial match, me hearty!):</label>
+                        <input type="text" id="genre" name="genre" th:value="${searchGenre}" 
+                               placeholder="Enter genre..." class="search-input">
+                    </div>
+                    <div class="search-actions">
+                        <button type="submit" class="search-btn">⚓ Search fer Treasure!</button>
+                        <a href="/movies" class="clear-btn">🧹 Clear & Show All Movies</a>
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Available Genres Help -->
+            <div class="genres-help" th:if="${allGenres != null and !allGenres.isEmpty()}">
+                <p><strong>🗺️ Available Genres in our Treasure Chest:</strong></p>
+                <div class="genres-list">
+                    <span th:each="availableGenre, iterStat : ${allGenres}" 
+                          th:text="${availableGenre} + ${!iterStat.last ? ', ' : ''}" 
+                          class="genre-tag"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Message -->
+        <div th:if="${searchMessage}" class="search-message" 
+             th:classappend="${#lists.isEmpty(movies)} ? 'no-results' : 'has-results'">
+            <p th:text="${searchMessage}">Search message</p>
+        </div>
+
+        <!-- Movies Grid -->
+        <div class="movies-grid" th:if="${!#lists.isEmpty(movies)}">
             <div class="movie-card" th:each="movie : ${movies}">
                 <div class="movie-icon" th:text="${movie.icon}">🎬</div>
                 <h3 th:text="${movie.movieName}">Movie Title</h3>
                 <div class="movie-details">
-                    <p class="director">Director: <span th:text="${movie.director}">Director Name</span></p>
-                    <p class="year">Year: <span th:text="${movie.year}">2023</span></p>
-                    <p class="genre">Genre: <span th:text="${movie.genre}">Drama</span></p>
-                    <p class="duration">Duration: <span th:text="${movie.duration}">120</span> minutes</p>
+                    <p class="director">⚓ Captain (Director): <span th:text="${movie.director}">Director Name</span></p>
+                    <p class="year">📅 Year of Discovery: <span th:text="${movie.year}">2023</span></p>
+                    <p class="genre">🎭 Genre: <span th:text="${movie.genre}">Drama</span></p>
+                    <p class="duration">⏱️ Duration: <span th:text="${movie.duration}">120</span> minutes</p>
                 </div>
                 <div class="rating">
                     <span class="stars">
@@ -26,8 +74,26 @@
                     </span>
                     <span class="rating-score" th:text="${#numbers.formatDecimal(movie.imdbRating, 1, 1)} + '/5'">5.0/5</span>
                 </div>
-                <a th:href="@{/movies/{id}/details(id=${movie.id})}" class="details-btn">View Details</a>
+                <a th:href="@{/movies/{id}/details(id=${movie.id})}" class="details-btn">🔍 View Treasure Details</a>
             </div>
+        </div>
+
+        <!-- No Results Message -->
+        <div th:if="${#lists.isEmpty(movies) and isSearchResult}" class="no-results-section">
+            <div class="no-results-icon">🏴‍☠️</div>
+            <h3>Blimey! No Treasure Found!</h3>
+            <p>No movies match yer search criteria, ye scallywag! Try:</p>
+            <ul>
+                <li>🔍 Different movie name or partial name</li>
+                <li>🆔 Valid movie ID (1-12 in our treasure chest)</li>
+                <li>🎭 Different genre (Drama, Action, Crime, etc.)</li>
+                <li>🧹 <a href="/movies">Clear search and browse all movies</a></li>
+            </ul>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>🏴‍☠️ <em>Arrr! Welcome to the Pirate Cinema - where every movie be a treasure worth discoverin'!</em> ⚓</p>
         </div>
     </div>
 </body>
